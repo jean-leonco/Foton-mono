@@ -37,7 +37,7 @@ export const getLoader = () =>
     mongooseLoader(ProductModel, ids)
   );
 
-const viewerCanSee = (context: GraphQLContext) => true;
+const viewerCanSee = (context: GraphQLContext) => !!context.user;
 
 export const load = async (
   context: GraphQLContext,
@@ -82,6 +82,10 @@ export const loadProducts = async (
   context: GraphQLContext,
   args: ProductArgs
 ) => {
+  if (!context.user) {
+    return [];
+  }
+
   const where = args.search
     ? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } }
     : {};

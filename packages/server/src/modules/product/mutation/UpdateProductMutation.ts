@@ -29,13 +29,20 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: async ({ id, name, description, price }, { user }) => {
     if (!user) return { error: 'You should be authenticated' };
 
-    const product = await ProductModel.findById(id);
+    let product;
+    try {
+      product = await ProductModel.findById(id);
+    } catch (error) {
+      return { error: 'Product does not exists' };
+    }
 
     if (!product) return { error: 'Product does not exists' };
 
     product.name = name;
     product.description = description;
     product.price = price;
+
+    await product.save();
 
     return { id };
   },

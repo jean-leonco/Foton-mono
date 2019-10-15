@@ -3,20 +3,19 @@ import { promisify } from 'util';
 import { User } from './model';
 import { jwtSecret } from './config';
 
-export async function getUser(encoded: string) {
+export async function getUser(encoded: string | null) {
   if (!encoded) return { user: null };
 
   const [, , token] = encoded.split(' ');
 
   try {
-    const decoded = await promisify(jwt.verify)(token, jwtSecret);
+    const decoded: any = await promisify(jwt.verify)(token, jwtSecret);
     const user = await User.findOne({ _id: decoded.id });
 
     return {
       user,
     };
   } catch (err) {
-    console.log(err);
     return { user: null };
   }
 }
@@ -26,5 +25,5 @@ type UserType = {
 };
 
 export function generateToken(user: UserType) {
-  return `JWT ${jwt.sign({ id: user._id }, jwtSecret)}`;
+  return `beared JWT ${jwt.sign({ id: user._id }, jwtSecret)}`;
 }

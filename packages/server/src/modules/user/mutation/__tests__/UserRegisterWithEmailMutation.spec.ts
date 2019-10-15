@@ -8,19 +8,20 @@ import {
   clearDbAndRestartCounters,
   disconnectMongoose,
   createRows,
+  //@ts-ignore
 } from '../../../../../test/helper';
 
-beforeAll(connectMongoose);
+describe('UserRegisterWithEmailMutation', () => {
+  beforeAll(connectMongoose);
 
-beforeEach(clearDbAndRestartCounters);
+  beforeEach(clearDbAndRestartCounters);
 
-afterAll(disconnectMongoose);
+  afterAll(disconnectMongoose);
 
-it('should not register with an existing email', async () => {
-  const user = await createRows.createUser();
+  it('should not register with an existing email', async () => {
+    const user = await createRows.createUser();
 
-  // language=GraphQL
-  const query = `
+    const mutation = `
     mutation M(
       $name: String!
       $email: String!
@@ -37,24 +38,30 @@ it('should not register with an existing email', async () => {
     }
   `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    name: 'Test',
-    email: user.email,
-    password: '123',
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      name: 'Test',
+      email: user.email,
+      password: '123',
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
-  expect(result.data.UserRegisterWithEmail.token).toBe(null);
-  expect(result.data.UserRegisterWithEmail.error).toBe('Email already in use');
-});
+    const { data } = await graphql(
+      schema,
+      mutation,
+      rootValue,
+      context,
+      variables
+    );
 
-it('should create a new user when parameters are valid', async () => {
-  const email = 'awesome@example.com';
+    expect(data.UserRegisterWithEmail.token).toBe(null);
+    expect(data.UserRegisterWithEmail.error).toBe('Email already in use');
+  });
 
-  // language=GraphQL
-  const query = `
+  it('should create a new user when parameters are valid', async () => {
+    const email = 'awesome@example.com';
+
+    const mutation = `
     mutation M(
       $name: String!
       $email: String!
@@ -71,21 +78,29 @@ it('should create a new user when parameters are valid', async () => {
     }
   `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    name: 'Test',
-    email,
-    password: '123',
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      name: 'Test',
+      email,
+      password: '123',
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
-  expect(result.data.UserRegisterWithEmail.token).not.toBe(null);
-  expect(result.data.UserRegisterWithEmail.error).toBe(null);
+    const { data } = await graphql(
+      schema,
+      mutation,
+      rootValue,
+      context,
+      variables
+    );
 
-  const user = await UserModel.findOne({
-    email,
+    expect(data.UserRegisterWithEmail.token).not.toBe(null);
+    expect(data.UserRegisterWithEmail.error).toBe(null);
+
+    const user = await UserModel.findOne({
+      email,
+    });
+
+    expect(user).not.toBe(null);
   });
-
-  expect(user).not.toBe(null);
 });

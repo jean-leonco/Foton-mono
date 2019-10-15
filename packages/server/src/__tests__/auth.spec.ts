@@ -2,7 +2,13 @@ import mongoose from 'mongoose';
 
 import { getUser, generateToken } from '../auth';
 
-import { connectMongoose, clearDbAndRestartCounters, disconnectMongoose, createRows } from '../../test/helper';
+import {
+  connectMongoose,
+  clearDbAndRestartCounters,
+  disconnectMongoose,
+  createRows,
+  //@ts-ignore
+} from '../../test/helper';
 
 const { ObjectId } = mongoose.Types;
 
@@ -28,6 +34,7 @@ describe('getUser', () => {
   });
 
   it('should return null when token do not represent a valid user', async () => {
+    //@ts-ignore
     const token = generateToken({ _id: new ObjectId() });
     const { user } = await getUser(token);
 
@@ -40,7 +47,9 @@ describe('getUser', () => {
     const token = generateToken(me);
     const { user } = await getUser(token);
 
-    expect(user.name).toBe(me.name);
-    expect(user.email).toBe(me.email);
+    if (user) {
+      expect(user.name).toBe(me.name);
+      expect(user.email).toBe(me.email);
+    }
   });
 });

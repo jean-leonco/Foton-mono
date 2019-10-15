@@ -12,6 +12,7 @@ const pack = require('./package');
 module.exports = {
   displayName: pack.name,
   name: pack.name,
+  bail: 1,
   testEnvironment: '<rootDir>/test/environment/mongodb',
   // testPathIgnorePatterns: ignoredPaths,
   // coverageReporters: ['lcov', 'html'],
@@ -37,5 +38,4 @@ module.exports = {
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js?|ts?)$',
   moduleFileExtensions: ['ts', 'js'],
-
 };

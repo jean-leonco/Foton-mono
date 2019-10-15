@@ -12,7 +12,13 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: async ({ id }, { user }) => {
     if (!user) return { error: 'You should be authenticated' };
 
-    const product = await ProductModel.findById(id);
+    let product;
+
+    try {
+      product = await ProductModel.findById(id);
+    } catch (error) {
+      return { error: 'Product does not exists' };
+    }
 
     if (!product) return { error: 'Product does not exists' };
 

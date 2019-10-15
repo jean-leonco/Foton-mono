@@ -8,6 +8,7 @@ import {
   clearDbAndRestartCounters,
   disconnectMongoose,
   createRows,
+  //@ts-ignore
 } from '../../../test/helper';
 
 beforeAll(connectMongoose);
@@ -16,11 +17,11 @@ beforeEach(clearDbAndRestartCounters);
 
 afterAll(disconnectMongoose);
 
-it('should load User', async () => {
-  const user = await createRows.createUser();
+describe('Node interface', () => {
+  it('should load User', async () => {
+    const user = await createRows.createUser();
 
-  // language=GraphQL
-  const query = `
+    const query = `
     query Q($id: ID!) {
       node(id: $id) {
         id
@@ -29,15 +30,86 @@ it('should load User', async () => {
         }
       }
     }
-  `;
+    `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    id: toGlobalId('User', user.id),
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      id: toGlobalId('User', user.id),
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
-  expect(result.data.node.id).toBe(variables.id);
-  expect(result.data.node.name).toBe(user.name);
+    const { data } = await graphql(
+      schema,
+      query,
+      rootValue,
+      context,
+      variables
+    );
+
+    expect(data.node.id).toBe(variables.id);
+    expect(data.node.name).toBe(user.name);
+  });
+
+  it('should load Product', async () => {
+    const product = await createRows.createProduct();
+
+    const query = `
+    query Q($id: ID!) {
+      node(id: $id) {
+        id
+        ... on Product {
+          name
+        }
+      }
+    }
+    `;
+
+    const rootValue = {};
+    const context = getContext({ user: { name: 'user' } });
+    const variables = {
+      id: toGlobalId('Product', product.id),
+    };
+
+    const { data } = await graphql(
+      schema,
+      query,
+      rootValue,
+      context,
+      variables
+    );
+
+    expect(data.node.id).toBe(variables.id);
+    expect(data.node.name).toBe(product.name);
+  });
+
+  it('should not load Product without authentication', async () => {
+    const product = await createRows.createProduct();
+
+    const query = `
+    query Q($id: ID!) {
+      node(id: $id) {
+        id
+        ... on Product {
+          name
+        }
+      }
+    }
+    `;
+
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      id: toGlobalId('Product', product.id),
+    };
+
+    const { data } = await graphql(
+      schema,
+      query,
+      rootValue,
+      context,
+      variables
+    );
+
+    expect(data.node).toBe(null);
+  });
 });
