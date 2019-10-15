@@ -60,6 +60,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@types/bcryptjs": "^2.4.1",
     "@types/graphql-relay": "^0.4.6",
+    "@types/jest": "^24.0.19",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/kcors": "^2.2.3",
     "@types/koa-logger": "^3.1.0",

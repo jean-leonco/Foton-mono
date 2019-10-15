@@ -1,4 +1,3 @@
-
 import { fromGlobalId, nodeDefinitions } from 'graphql-relay';
 import DataLoader from 'dataloader';
 import { GraphQLObjectType } from 'graphql';
@@ -28,10 +27,10 @@ export type Loaders = {
 export const { nodeField, nodeInterface } = nodeDefinitions(
   (globalId, context: GraphQLContext) => {
     const { type, id } = fromGlobalId(globalId);
-    // TODO - convert loaders to Loaders
+
     const loader: Loader = (loaders as Loaders)[`${type}Loader`];
 
     return (loader && loader.load(context, id)) || null;
   },
-  object => registeredTypes[object.constructor.name] || null,
+  object => registeredTypes[object.constructor.name] || null
 );

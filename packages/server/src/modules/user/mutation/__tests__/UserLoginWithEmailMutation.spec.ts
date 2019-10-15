@@ -7,17 +7,18 @@ import {
   clearDbAndRestartCounters,
   disconnectMongoose,
   createRows,
+  //@ts-ignore
 } from '../../../../../test/helper';
 
-beforeAll(connectMongoose);
+describe('UserLoginWithEmailMutation', () => {
+  beforeAll(connectMongoose);
 
-beforeEach(clearDbAndRestartCounters);
+  beforeEach(clearDbAndRestartCounters);
 
-afterAll(disconnectMongoose);
+  afterAll(disconnectMongoose);
 
-it('should not login if email is not in the database', async () => {
-  // language=GraphQL
-  const query = `
+  it('should not login if email is not in the database', async () => {
+    const mutation = `
     mutation M(
       $email: String!
       $password: String!
@@ -33,23 +34,29 @@ it('should not login if email is not in the database', async () => {
     }
   `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    email: 'awesome@example.com',
-    password: 'awesome',
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      email: 'awesome@example.com',
+      password: 'awesome',
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
+    const { data } = await graphql(
+      schema,
+      mutation,
+      rootValue,
+      context,
+      variables
+    );
 
-  expect(result.data.UserLoginWithEmail.token).toBe(null);
-  expect(result.data.UserLoginWithEmail.error).toBe('Invalid credentials');
-});
+    expect(data.UserLoginWithEmail.token).toBe(null);
+    expect(data.UserLoginWithEmail.error).toBe('Invalid credentials');
+  });
 
-it('should not login with wrong password', async () => {
-  const user = await createRows.createUser();
-  // language=GraphQL
-  const query = `
+  it('should not login with wrong password', async () => {
+    const user = await createRows.createUser();
+
+    const mutation = `
     mutation M(
       $email: String!
       $password: String!
@@ -65,24 +72,30 @@ it('should not login with wrong password', async () => {
     }
   `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    email: user.email,
-    password: 'awesome',
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      email: user.email,
+      password: 'awesome',
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
+    const { data } = await graphql(
+      schema,
+      mutation,
+      rootValue,
+      context,
+      variables
+    );
 
-  expect(result.data.UserLoginWithEmail.token).toBe(null);
-  expect(result.data.UserLoginWithEmail.error).toBe('Invalid credentials');
-});
+    expect(data.UserLoginWithEmail.token).toBe(null);
+    expect(data.UserLoginWithEmail.error).toBe('Invalid credentials');
+  });
 
-it('should generate token when email and password is correct', async () => {
-  const password = 'awesome';
-  const user = await createRows.createUser({ password });
-  // language=GraphQL
-  const query = `
+  it('should generate token when email and password is correct', async () => {
+    const password = 'awesome';
+    const user = await createRows.createUser({ password });
+
+    const mutation = `
     mutation M(
       $email: String!
       $password: String!
@@ -98,15 +111,24 @@ it('should generate token when email and password is correct', async () => {
     }
   `;
 
-  const rootValue = {};
-  const context = getContext();
-  const variables = {
-    email: user.email,
-    password: 'awesome',
-  };
+    const rootValue = {};
+    const context = getContext();
+    const variables = {
+      email: user.email,
+      password: 'awesome',
+    };
 
-  const result = await graphql(schema, query, rootValue, context, variables);
+    const { data } = await graphql(
+      schema,
+      mutation,
+      rootValue,
+      context,
+      variables
+    );
 
-  expect(result.data.UserLoginWithEmail.token).not.toBe(null);
-  expect(result.data.UserLoginWithEmail.error).toBe(null);
+    if (data) {
+      expect(data.UserLoginWithEmail.token).not.toBe(null);
+      expect(data.UserLoginWithEmail.error).toBe(null);
+    }
+  });
 });

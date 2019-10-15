@@ -18,7 +18,7 @@ export default new GraphQLObjectType({
     node: nodeField,
     me: {
       type: UserType,
-      resolve: (root, args, context) =>
+      resolve: (obj, args, context) =>
         context.user ? UserLoader.load(context, context.user._id) : null,
     },
     products: {

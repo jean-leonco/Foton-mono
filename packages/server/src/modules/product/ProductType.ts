@@ -12,7 +12,7 @@ import { registerType, nodeInterface } from '../../interface/NodeInterface';
 
 const ProductType = registerType(
   new GraphQLObjectType({
-    name: 'ProductType',
+    name: 'Product',
     description: 'Product data',
     fields: {
       id: globalIdField('Product'),
