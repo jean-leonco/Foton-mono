@@ -23,12 +23,15 @@ export default class Product {
 
   price: number;
 
+  createdAt: string;
+
   constructor(data: IProduct) {
     this.id = data._id;
     this._id = data._id;
     this.name = data.name;
     this.description = data.description;
     this.price = data.price;
+    this.createdAt = new Date(data.createdAt).toISOString();
   }
 }
 

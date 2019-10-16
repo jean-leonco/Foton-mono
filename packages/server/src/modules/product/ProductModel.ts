@@ -25,6 +25,7 @@ export interface IProduct extends Document {
   name: string;
   description: string;
   price: number;
+  createdAt: string;
 }
 
 const ProductModel: Model<IProduct> = mongoose.model('Product', schema);
