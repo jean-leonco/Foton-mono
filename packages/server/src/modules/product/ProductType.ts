@@ -32,6 +32,10 @@ const ProductType = registerType(
         type: GraphQLFloat,
         resolve: product => product.price,
       },
+      createdAt: {
+        type: GraphQLString,
+        resolve: product => product.createdAt,
+      },
     },
     interfaces: () => [nodeInterface],
   })
