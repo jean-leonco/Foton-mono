@@ -86,7 +86,12 @@ export const loadProducts = async (
   args: ProductArgs
 ) => {
   if (!context.user) {
-    return [];
+    return {
+      edges: [],
+      count: 0,
+      totalCount: 0,
+      pageInfo: { hasNextPage: false, hasPreviousPage: false },
+    };
   }
 
   const where = args.search
