@@ -103,7 +103,8 @@
     "start:app": "yarn workspace @folenge/app start",
     "start:ios": "yarn workspace @folenge/app ios",
     "start:server": "yarn workspace @folenge/server start",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "deploy": "yarn workspace @folenge/server build && yarn workspace @folenge/server serve"
   },
   "workspaces": {
     "packages": [
