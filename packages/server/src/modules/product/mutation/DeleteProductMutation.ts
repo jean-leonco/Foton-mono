@@ -1,5 +1,6 @@
 import { mutationWithClientMutationId } from 'graphql-relay';
 import { GraphQLNonNull, GraphQLID, GraphQLString } from 'graphql';
+
 import ProductModel from '../ProductModel';
 
 export default mutationWithClientMutationId({

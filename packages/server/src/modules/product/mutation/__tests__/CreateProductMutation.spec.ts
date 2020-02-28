@@ -1,13 +1,13 @@
 import { graphql } from 'graphql';
 
-import { schema } from '../../../../schema';
+import { schema } from '../../../../graphql/schema';
 import {
-  getContext,
-  connectMongoose,
   clearDbAndRestartCounters,
+  connectMongoose,
   disconnectMongoose,
-  //@ts-ignore
-} from '../../../../../test/helper';
+  getContext,
+  createUser,
+} from '../../../../../test/helpers';
 
 describe('CreateProductMutation', () => {
   beforeAll(connectMongoose);
@@ -37,21 +37,17 @@ describe('CreateProductMutation', () => {
     }
   `;
 
+    const user = await createUser();
+
     const rootValue = {};
-    const context = getContext({ user: { name: 'user' } });
+    const context = await getContext({ user });
     const variables = {
       name: 'product',
       description: 'a new product',
       price: 12.5,
     };
 
-    const { data } = await graphql(
-      schema,
-      mutation,
-      rootValue,
-      context,
-      variables
-    );
+    const { data } = await graphql(schema, mutation, rootValue, context, variables);
 
     expect(data.CreateProductMutation.product).not.toBe(null);
     expect(data.CreateProductMutation.error).toBe(null);
@@ -86,17 +82,9 @@ describe('CreateProductMutation', () => {
       price: 12.5,
     };
 
-    const { data } = await graphql(
-      schema,
-      mutation,
-      rootValue,
-      context,
-      variables
-    );
+    const { data } = await graphql(schema, mutation, rootValue, context, variables);
 
     expect(data.CreateProductMutation.product).toBe(null);
-    expect(data.CreateProductMutation.error).toBe(
-      'You should be authenticated'
-    );
+    expect(data.CreateProductMutation.error).toBe('You should be authenticated');
   });
 });

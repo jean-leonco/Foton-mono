@@ -24,7 +24,7 @@ const schema = new mongoose.Schema(
   {
     timestamps: true,
     collection: 'user',
-  }
+  },
 );
 
 export interface IUser extends Document {

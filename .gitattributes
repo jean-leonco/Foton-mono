@@ -1,2 +1,2 @@
 schema.json linguist-generated
-*.pbxproj -text
+__generated__ linguist-generated

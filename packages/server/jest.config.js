@@ -1,41 +1,21 @@
-const pack = require('./package');
-
-// const ignoredPaths = [
-//   '<rootDir>/node_modules/',
-//   '<rootDir>/dist',
-//   '<rootDir>/scripts',
-//   '<rootDir>/repl/',
-//   '<rootDir>/flow-typed/',
-//   '<rootDir>/test/',
-// ];
+const pkg = require('./package');
 
 module.exports = {
-  displayName: pack.name,
-  name: pack.name,
-  bail: 1,
+  rootDir: './',
+  name: pkg.name,
+  displayName: pkg.name.toUpperCase(),
   testEnvironment: '<rootDir>/test/environment/mongodb',
-  // testPathIgnorePatterns: ignoredPaths,
-  // coverageReporters: ['lcov', 'html'],
+  testPathIgnorePatterns: ['/node_modules/', './dist'],
+  coverageReporters: ['lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/test/setupTestFramework.js'],
   globalSetup: '<rootDir>/test/setup.js',
   globalTeardown: '<rootDir>/test/teardown.js',
   resetModules: false,
-  reporters: [
-    'default',
-    [
-      'jest-junit',
-      {
-        suiteName: 'GraphQL Dataloader Boilerplate Tests',
-        output: './test-results/jest/results.xml',
-      },
-    ],
-  ],
+  reporters: ['default'],
   transform: {
-    // '^.+\\.(js|ts|tsx)?$': 'babel-jest',
-    // '^.+\\.(js|ts|tsx)?$': '<rootDir>/node_modules/babel-jest',
-    // '^.+\\.(js|ts|tsx)?$': '<rootDir>/../../node_modules/babel-jest',
-    '^.+\\.(js|ts|tsx)?$': '<rootDir>/test/babel-transformer',
+    // '^.+\\.(js|jsx|ts|tsx)?$': require.resolve('babel-jest'),
+    '^.+\\.(js|jsx|ts|tsx)?$': '<rootDir>/test/babel-transformer',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js?|ts?)$',
-  moduleFileExtensions: ['ts', 'js'],
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|jsx|ts|tsx)?$',
+  moduleFileExtensions: ['ts', 'js', 'tsx'],
 };
