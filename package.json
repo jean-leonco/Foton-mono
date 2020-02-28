@@ -30,6 +30,7 @@
     "prettier": "prettier",
     "relay": "yarn workspace @foton-challenge/app relay",
     "server:build": "yarn workspace @foton-challenge/server build",
+    "server:test": "yarn workspace @foton-challenge/server test",
     "startup": "./scripts/startup.sh",
     "test": "jest",
     "test:server": "yarn workspace @foton-challenge/server test",
