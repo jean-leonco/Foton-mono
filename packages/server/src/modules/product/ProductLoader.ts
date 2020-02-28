@@ -1,28 +1,20 @@
+import { connectionFromMongoCursor, mongooseLoader } from '@entria/graphql-mongoose-loader';
 import DataLoader from 'dataloader';
-import {
-  connectionFromMongoCursor,
-  mongooseLoader,
-} from '@entria/graphql-mongoose-loader';
-import { Types } from 'mongoose';
 import { ConnectionArguments } from 'graphql-relay';
-import mongoose from 'mongoose';
-declare type ObjectId = mongoose.Schema.Types.ObjectId;
+import { Types } from 'mongoose';
+
+import { DataLoaderKey, GraphQLContext } from '../../types';
+
+import { escapeRegex } from '../../common/utils';
 
 import ProductModel, { IProduct } from './ProductModel';
 
-import { GraphQLContext } from '../../TypeDefinition';
-
 export default class Product {
   id: string;
-
   _id: Types.ObjectId;
-
   name: string;
-
   description: string;
-
   price: number;
-
   createdAt: string;
 
   constructor(data: IProduct) {
@@ -34,76 +26,51 @@ export default class Product {
     this.createdAt = new Date(data.createdAt).toISOString();
   }
 }
+const viewerCanSee = () => true;
 
-export const getLoader = () =>
-  new DataLoader((ids: ReadonlyArray<string>) =>
-    mongooseLoader(ProductModel, ids)
-  );
+export const getLoader = () => new DataLoader<DataLoaderKey, IProduct>(ids => mongooseLoader(ProductModel, ids as any));
 
-const viewerCanSee = (context: GraphQLContext) => !!context.user;
-
-export const load = async (
-  context: GraphQLContext,
-  id: string | Object | ObjectId
-): Promise<Product | null> => {
-  if (!id && typeof id !== 'string') {
+export const load = async (context: GraphQLContext, id: DataLoaderKey) => {
+  if (!id) {
     return null;
   }
 
-  let data;
   try {
-    data = await context.dataloaders.ProductLoader.load(id as string);
+    const data = await context.dataloaders.ProductLoader.load(id);
+
+    if (!data) {
+      return null;
+    }
+
+    return viewerCanSee() ? new Product(data) : null;
   } catch (err) {
     return null;
   }
-
-  return viewerCanSee(context) ? new Product(data) : null;
 };
 
-export const clearCache = (
-  { dataloaders }: GraphQLContext,
-  id: Types.ObjectId
-) => dataloaders.ProductLoader.clear(id.toString());
+export const clearCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId) =>
+  dataloaders.ProductLoader.clear(id.toString());
 
-export const primeCache = (
-  { dataloaders }: GraphQLContext,
-  id: Types.ObjectId,
-  data: IProduct
-) => dataloaders.ProductLoader.prime(id.toString(), data);
+export const primeCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId, data: IProduct) =>
+  dataloaders.ProductLoader.prime(id.toString(), data);
 
-export const clearAndPrimeCache = (
-  context: GraphQLContext,
-  id: Types.ObjectId,
-  data: IProduct
-) => clearCache(context, id) && primeCache(context, id, data);
+export const clearAndPrimeCache = (context: GraphQLContext, id: Types.ObjectId, data: IProduct) =>
+  clearCache(context, id) && primeCache(context, id, data);
 
-type ProductArgs = ConnectionArguments & {
+interface LoadProductArgs extends ConnectionArguments {
   search?: string;
-};
+}
 
-export const loadProducts = async (
-  context: GraphQLContext,
-  args: ProductArgs
-) => {
-  if (!context.user) {
-    return {
-      edges: [],
-      count: 0,
-      totalCount: 0,
-      pageInfo: { hasNextPage: false, hasPreviousPage: false },
-    };
+export const LoadProducts = async (context: GraphQLContext, args: LoadProductArgs) => {
+  const conditions: any = {};
+
+  if (args.search) {
+    const searchRegex = new RegExp(`${escapeRegex(args.search)}`, 'ig');
+    conditions.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
   }
 
-  const where = args.search
-    ? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } }
-    : {};
-
-  const products = ProductModel.find(where, { _id: 1 }).sort({
-    createdAt: -1,
-  });
-
   return connectionFromMongoCursor({
-    cursor: products,
+    cursor: ProductModel.find(conditions).sort({ date: 1 }),
     context,
     args,
     loader: load,

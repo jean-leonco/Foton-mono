@@ -1,10 +1,5 @@
 import { mutationWithClientMutationId } from 'graphql-relay';
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLID,
-} from 'graphql';
+import { GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLID } from 'graphql';
 
 import ProductModel from '../ProductModel';
 import * as ProductLoader from '../ProductLoader';

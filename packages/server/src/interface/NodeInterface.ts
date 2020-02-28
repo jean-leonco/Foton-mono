@@ -1,36 +1,44 @@
-import { fromGlobalId, nodeDefinitions } from 'graphql-relay';
-import DataLoader from 'dataloader';
-import { GraphQLObjectType } from 'graphql';
+import { fromGlobalId } from 'graphql-relay';
 
-import * as loaders from '../loader';
-import { GraphQLContext } from '../TypeDefinition';
+import User, * as UserLoader from '../modules/user/UserLoader';
+import UserType from '../modules/user/UserType';
 
-type RegisteredTypes = {
-  [key: string]: GraphQLObjectType;
-};
-const registeredTypes: RegisteredTypes = {};
+import Product, * as ProductLoader from '../modules/product/ProductLoader';
+import ProductType from '../modules/product/ProductType';
 
-export function registerType(type: GraphQLObjectType) {
-  registeredTypes[type.name] = type;
-  return type;
-}
+import { GraphQLContext } from '../types';
 
-type Loader = {
-  load: (context: GraphQLContext, id: string) => Promise<any>;
-  getLoader: () => DataLoader<string, any>;
-};
+import { nodeDefinitions } from './node';
+const { nodeField, nodesField, nodeInterface } = nodeDefinitions(
+  // A method that maps from a global id to an object
+  async (globalId, context: GraphQLContext) => {
+    const { id, type } = fromGlobalId(globalId);
 
-export type Loaders = {
-  [key: string]: Loader;
-};
+    switch (type) {
+      case 'Product':
+        return ProductLoader.load(context, id);
 
-export const { nodeField, nodeInterface } = nodeDefinitions(
-  (globalId, context: GraphQLContext) => {
-    const { type, id } = fromGlobalId(globalId);
+      case 'User':
+        return UserLoader.load(context, id);
 
-    const loader: Loader = (loaders as Loaders)[`${type}Loader`];
-
-    return (loader && loader.load(context, id)) || null;
+      default:
+        // it should not get here
+        return null;
+    }
   },
-  object => registeredTypes[object.constructor.name] || null
+
+  // A method that maps from an object to a type
+  obj => {
+    if (obj instanceof Product) {
+      return ProductType;
+    } else if (obj instanceof User) {
+      return UserType;
+    }
+    // it should not get here
+    return null;
+  },
 );
+
+export const NodeInterface = nodeInterface;
+export const NodeField = nodeField;
+export const NodesField = nodesField;

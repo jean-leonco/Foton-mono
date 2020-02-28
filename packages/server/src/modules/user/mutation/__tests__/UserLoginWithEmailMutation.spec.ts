@@ -1,14 +1,13 @@
 import { graphql } from 'graphql';
 
-import { schema } from '../../../../schema';
+import { schema } from '../../../../graphql/schema';
 import {
-  getContext,
-  connectMongoose,
   clearDbAndRestartCounters,
+  connectMongoose,
   disconnectMongoose,
-  createRows,
-  //@ts-ignore
-} from '../../../../../test/helper';
+  getContext,
+  createUser,
+} from '../../../../../test/helpers';
 
 describe('UserLoginWithEmailMutation', () => {
   beforeAll(connectMongoose);
@@ -35,26 +34,20 @@ describe('UserLoginWithEmailMutation', () => {
   `;
 
     const rootValue = {};
-    const context = getContext();
+    const context = await getContext();
     const variables = {
       email: 'awesome@example.com',
       password: 'awesome',
     };
 
-    const { data } = await graphql(
-      schema,
-      mutation,
-      rootValue,
-      context,
-      variables
-    );
+    const { data } = await graphql(schema, mutation, rootValue, context, variables);
 
     expect(data.UserLoginWithEmail.token).toBe(null);
     expect(data.UserLoginWithEmail.error).toBe('Invalid credentials');
   });
 
   it('should not login with wrong password', async () => {
-    const user = await createRows.createUser();
+    const user = await createUser();
 
     const mutation = `
     mutation M(
@@ -73,19 +66,13 @@ describe('UserLoginWithEmailMutation', () => {
   `;
 
     const rootValue = {};
-    const context = getContext();
+    const context = await getContext();
     const variables = {
       email: user.email,
       password: 'awesome',
     };
 
-    const { data } = await graphql(
-      schema,
-      mutation,
-      rootValue,
-      context,
-      variables
-    );
+    const { data } = await graphql(schema, mutation, rootValue, context, variables);
 
     expect(data.UserLoginWithEmail.token).toBe(null);
     expect(data.UserLoginWithEmail.error).toBe('Invalid credentials');
@@ -93,7 +80,7 @@ describe('UserLoginWithEmailMutation', () => {
 
   it('should generate token when email and password is correct', async () => {
     const password = 'awesome';
-    const user = await createRows.createUser({ password });
+    const user = await createUser({ password });
 
     const mutation = `
     mutation M(
@@ -112,19 +99,13 @@ describe('UserLoginWithEmailMutation', () => {
   `;
 
     const rootValue = {};
-    const context = getContext();
+    const context = await getContext();
     const variables = {
       email: user.email,
       password: 'awesome',
     };
 
-    const { data } = await graphql(
-      schema,
-      mutation,
-      rootValue,
-      context,
-      variables
-    );
+    const { data } = await graphql(schema, mutation, rootValue, context, variables);
 
     if (data) {
       expect(data.UserLoginWithEmail.token).not.toBe(null);

@@ -1,8 +1,7 @@
-
 import { GraphQLString, GraphQLNonNull } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
-import { generateToken } from '../../../auth';
+import { generateToken } from '../../../common/auth';
 
 import UserModel from '../UserModel';
 
@@ -19,7 +18,7 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: async ({ email, password }) => {
     const user = await UserModel.findOne({ email: email.toLowerCase() });
 
-    const defaultErrorMessage = 'Invalid credentials'
+    const defaultErrorMessage = 'Invalid credentials';
     if (!user) {
       return {
         error: defaultErrorMessage,

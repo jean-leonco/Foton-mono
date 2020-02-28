@@ -1,22 +1,16 @@
-import DataLoader from 'dataloader';
 import { mongooseLoader } from '@entria/graphql-mongoose-loader';
+import DataLoader from 'dataloader';
 import { Types } from 'mongoose';
-import mongoose from 'mongoose';
-declare type ObjectId = mongoose.Schema.Types.ObjectId;
+
+import { DataLoaderKey, GraphQLContext } from '../../types';
 
 import UserModel, { IUser } from './UserModel';
 
-import { GraphQLContext } from '../../TypeDefinition';
-
 export default class User {
   id: string;
-
   _id: Types.ObjectId;
-
   name: string;
-
   email: string | null | undefined;
-
   active: boolean | null | undefined;
 
   constructor(data: IUser, { user }: GraphQLContext) {
@@ -31,41 +25,33 @@ export default class User {
   }
 }
 
-export const getLoader = () =>
-  new DataLoader((ids: ReadonlyArray<string>) =>
-    mongooseLoader(UserModel, ids)
-  );
-
 const viewerCanSee = () => true;
 
-export const load = async (
-  context: GraphQLContext,
-  id: string | Object | ObjectId
-): Promise<User | null> => {
-  if (!id && typeof id !== 'string') {
+export const getLoader = () => new DataLoader<DataLoaderKey, IUser>(ids => mongooseLoader(UserModel, ids as any));
+
+export const load = async (context: GraphQLContext, id: DataLoaderKey) => {
+  if (!id) {
     return null;
   }
 
-  let data;
   try {
-    data = await context.dataloaders.UserLoader.load(id as string);
+    const data = await context.dataloaders.UserLoader.load(id);
+
+    if (!data) {
+      return null;
+    }
+
+    return viewerCanSee() ? new User(data, context) : null;
   } catch (err) {
     return null;
   }
-  return viewerCanSee() ? new User(data, context) : null;
 };
 
-export const clearCache = (
-  { dataloaders }: GraphQLContext,
-  id: Types.ObjectId
-) => dataloaders.UserLoader.clear(id.toString());
-export const primeCache = (
-  { dataloaders }: GraphQLContext,
-  id: Types.ObjectId,
-  data: IUser
-) => dataloaders.UserLoader.prime(id.toString(), data);
-export const clearAndPrimeCache = (
-  context: GraphQLContext,
-  id: Types.ObjectId,
-  data: IUser
-) => clearCache(context, id) && primeCache(context, id, data);
+export const clearCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId) =>
+  dataloaders.UserLoader.clear(id.toString());
+
+export const primeCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId, data: IUser) =>
+  dataloaders.UserLoader.prime(id.toString(), data);
+
+export const clearAndPrimeCache = (context: GraphQLContext, id: Types.ObjectId, data: IUser) =>
+  clearCache(context, id) && primeCache(context, id, data);

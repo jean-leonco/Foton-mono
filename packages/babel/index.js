@@ -4,40 +4,40 @@ module.exports = {
     [
       '@babel/preset-env',
       {
-        modules: false,
+        targets: {
+          node: 'current',
+        },
+        useBuiltIns: 'entry',
+        corejs: 3,
       },
     ],
     '@babel/preset-typescript',
   ],
   plugins: [
-    'react-hot-loader/babel',
+    'babel-plugin-idx',
     'babel-plugin-styled-components',
-    [
-      'relay',
-      {
-        schema: '../server/data/schema.json',
-      },
-    ],
+    'relay',
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-proposal-async-generator-functions',
+    '@babel/plugin-proposal-optional-chaining',
   ],
   env: {
     test: {
       presets: [
-        '@babel/preset-env',
         '@babel/preset-react',
+        ['@babel/preset-env', { targets: { node: 'current' } }],
         '@babel/preset-typescript',
       ],
       plugins: [
-        '@babel/plugin-transform-runtime',
-        'dynamic-import-node',
-        '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-proposal-object-rest-spread',
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-export-namespace-from',
+        '@babel/plugin-proposal-async-generator-functions',
+        '@babel/plugin-proposal-optional-chaining',
       ],
     },
   },
