@@ -9,13 +9,28 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.8.1",
+    "@react-native-community/masked-view": "^0.1.7",
+    "@react-navigation/native": "^5.0.9",
+    "@react-navigation/stack": "^5.1.1",
+    "date-fns": "^2.10.0",
     "react": "16.9.0",
-    "react-native": "0.61.5"
+    "react-native": "0.61.5",
+    "react-native-flash-message": "^0.1.15",
+    "react-native-gesture-handler": "^1.6.0",
+    "react-native-reanimated": "^1.7.0",
+    "react-native-safe-area-context": "^0.7.3",
+    "react-native-screens": "^2.2.0",
+    "react-relay": "^0.0.0-experimental-a1a40b68",
+    "styled-components": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",
     "@babel/runtime": "^7.8.3",
     "@types/react-native": "^0.60.25",
+    "@types/react-relay": "^7.0.3",
+    "@types/relay-runtime": "^8.0.6",
+    "@types/styled-components": "^5.0.1",
     "babel-plugin-optional-require": "^0.3.1",
     "get-yarn-workspaces": "^1.0.2",
     "metro-react-native-babel-preset": "^0.56.0",
@@ -23,6 +38,7 @@
     "relay-compiler": "^9.0.0",
     "relay-compiler-language-typescript": "^12.0.0",
     "relay-config": "^9.0.0",
+    "relay-runtime": "^9.0.0",
     "typescript": "^3.7.5"
   }
 }

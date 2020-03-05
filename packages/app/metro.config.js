@@ -14,14 +14,12 @@ const blacklist = require('metro-config/src/defaults/blacklist');
 
 const workspaces = getWorkspaces(__dirname);
 
-const packages = [];
-
 module.exports = {
   projectRoot: path.resolve(__dirname, '.'),
 
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
-    ...packages.map(pkg => path.resolve(__dirname, `../${pkg}`)),
+    //...packages.map(pkg => path.resolve(__dirname, `../${pkg}`)),
   ],
 
   resolver: {
