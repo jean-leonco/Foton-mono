@@ -12,18 +12,14 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "**/react-native",
-      "**/react-native/**"
     ]
   },
   "scripts": {
-    "app:android": "yarn workspace @foton-challenge/app android",
-    "app:ios": "yarn workspace @foton-challenge/app ios",
+    "android": "yarn workspace @foton-challenge/app android",
+    "app": "yarn workspace @foton-challenge/app start",
     "app:pod": "yarn workspace @foton-challenge/app pod:install",
-    "app:start": "yarn workspace @foton-challenge/app start",
     "graphql": "yarn workspace @foton-challenge/server graphql",
+    "ios": "yarn workspace @foton-challenge/app ios",
     "lint": "eslint --fix --ext .js,.ts,.tsx",
     "lint:ci": "eslint --quiet --ext .js,.ts,.tsx .",
     "lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
@@ -51,7 +47,6 @@
       "yarn sort-package-json"
     ]
   },
-  "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
