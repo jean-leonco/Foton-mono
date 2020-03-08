@@ -28,6 +28,7 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-empty-function': 'warn',
     'import/named': 'off',
     'no-console': 'error',
     'react/prop-types': 'off',

@@ -70,7 +70,7 @@ export const LoadProducts = async (context: GraphQLContext, args: LoadProductArg
   }
 
   return connectionFromMongoCursor({
-    cursor: ProductModel.find(conditions).sort({ date: 1 }),
+    cursor: ProductModel.find(conditions).sort({ createdAt: -1 }),
     context,
     args,
     loader: load,
