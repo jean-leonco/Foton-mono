@@ -1,4 +1,4 @@
-name: Manbu Server Test
+name: Foton Challenge Server Test
 
 on:
   push:
@@ -37,6 +37,10 @@ jobs:
         run: |
           yarn config set unsafe-disable-integrity-migration true -g
           yarn install --frozen-lockfile --production=false --non-interactive --cache-folder $(yarn cache dir)
+
+      - name: Create .env
+        run: |
+          cd packages/server && cp .env.example .env && cd ...
 
       - name: Test Server
         run: |

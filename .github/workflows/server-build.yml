@@ -1,4 +1,4 @@
-name: Manbu Server Build
+name: Foton Challenge Server Build
 
 on:
   push:
